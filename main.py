@@ -8,21 +8,22 @@ def count_user_commits(gh_session,user):
     r = gh_session.get('https://api.github.com/users/%s/repos' % user)
     repos = json.loads(r.content)
 
-    #print(repos)
+   # print(repos)
     for repo in repos:
         if repo['fork'] is True:
             # skip it
             continue
-        n = count_repo_commits(repo['url'] + '/commits')
-        print (repo['url']+ '/commits')
+        n = count_repo_commits(gh_session,repo['url'] + '/commits')
+        #print (repo['url']+ '/commits')
         repo['num_commits'] = n
         yield repo
 
 
-def count_repo_commits(commits_url, _acc=0):
-    r = requests.get(commits_url)
+def count_repo_commits(gh_session,commits_url, _acc=0):
+
+    r = gh_session.get(commits_url)
     #print (json.loads(r.content))
-   # parsejson(r.content)
+    parsejson(r.content)
 
     commits = json.loads(r.content)
     
@@ -46,11 +47,6 @@ def parsejson(jsoncontent):
     #print ("inside for parsejson")
     commitDate = (key['commit']['author']['date'])
     print (commitDate)
-    #print ('writing to file')
-#writing to csv file.
-    with open('commitdates.csv', 'w', newline='') as file:
-      writer = csv.writer(file)
-      writer.writerow(commitDate)
 
 # given a link header from github, find the link for the next url which they use for pagination
 def find_next(link):
@@ -63,7 +59,7 @@ def find_next(link):
 if __name__ == '__main__':
     import sys
     username='schamarthy'
-    authtoken='287044533887ed48824f496e9adb089d83b6f2cc'
+    authtoken='57ccc030c3a5c23ec7a25f3c92a449e5977d6a57'
     # create a re-usable session object with the user creds in-built
     gh_session = requests.Session()
     gh_session.auth = (username, authtoken)
