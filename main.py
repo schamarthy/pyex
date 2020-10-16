@@ -37,7 +37,7 @@ def count_repo_commits(commits_url, _acc=0):
 #writing method to parse json 
 def parsejson(jsoncontent):
   json_object =json.loads (jsoncontent)
-  print (json_object[0]['commit'][0]['date'])
+  print (json_object[0]['commit'])
   
 
 # given a link header from github, find the link for the next url which they use for pagination
