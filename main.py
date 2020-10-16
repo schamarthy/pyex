@@ -3,16 +3,18 @@ import requests
 import csv
 
 
-def count_user_commits(user):
-    r = requests.get('https://api.github.com/users/%s/repos' % user)
+def count_user_commits(gh_session,user):
+    #repos_url = 'https://api.github.com/user/repos'
+    r = gh_session.get('https://api.github.com/users/%s/repos' % user)
     repos = json.loads(r.content)
+
     #print(repos)
     for repo in repos:
         if repo['fork'] is True:
             # skip it
             continue
         n = count_repo_commits(repo['url'] + '/commits')
-        #print (repo['url']+ '/commits')
+        print (repo['url']+ '/commits')
         repo['num_commits'] = n
         yield repo
 
@@ -20,7 +22,7 @@ def count_user_commits(user):
 def count_repo_commits(commits_url, _acc=0):
     r = requests.get(commits_url)
     #print (json.loads(r.content))
-    parsejson(r.content)
+   # parsejson(r.content)
 
     commits = json.loads(r.content)
     
@@ -42,7 +44,13 @@ def parsejson(jsoncontent):
   
   for key in json_object:
     #print ("inside for parsejson")
-    print (key['commit']['author']['date'])
+    commitDate = (key['commit']['author']['date'])
+    print (commitDate)
+    #print ('writing to file')
+#writing to csv file.
+    with open('commitdates.csv', 'w', newline='') as file:
+      writer = csv.writer(file)
+      writer.writerow(commitDate)
 
 # given a link header from github, find the link for the next url which they use for pagination
 def find_next(link):
@@ -54,11 +62,15 @@ def find_next(link):
 
 if __name__ == '__main__':
     import sys
-    user='schamarthy'
-    #authtoken='b7116dccbbb3777697ad701f3960954a0290ff5a'
+    username='schamarthy'
+    authtoken='287044533887ed48824f496e9adb089d83b6f2cc'
+    # create a re-usable session object with the user creds in-built
+    gh_session = requests.Session()
+    gh_session.auth = (username, authtoken)
+    
     #print (user)
     total = 0
-    for repo in count_user_commits(user):
+    for repo in count_user_commits(gh_session,username):
         print ("Repo `%(name)s` has %(num_commits)d commits, size %(size)d." % repo)
         total += repo['num_commits']
     print ("Total commits: %d" % total)
