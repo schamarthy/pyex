@@ -1,0 +1,44 @@
+[[package]]
+category = "main"
+description = "http request/response parser"
+name = "http-parser"
+optional = false
+python-versions = "*"
+version = "0.9.0"
+
+[[package]]
+category = "main"
+description = "Python REST kit"
+name = "restkit"
+optional = false
+python-versions = "*"
+version = "4.2.2"
+
+[package.dependencies]
+http-parser = ">=0.8.3"
+socketpool = ">=0.5.3"
+
+[[package]]
+category = "main"
+description = "Python socket pool"
+name = "socketpool"
+optional = false
+python-versions = "*"
+version = "0.5.3"
+
+[metadata]
+content-hash = "92a946ef52288375e4ab156e1b4e78696c8808e396a820e25f1731c9ab14dc52"
+python-versions = "^3.8"
+
+[metadata.files]
+http-parser = [
+    {file = "http-parser-0.9.0.tar.gz", hash = "sha256:441d3a57c6227230f98aa97539da006fda0f8f4880bc4c5cd895ff2138a52621"},
+    {file = "http_parser-0.9.0-cp37-cp37m-macosx_10_15_x86_64.whl", hash = "sha256:fc025894367cff34fcfc7386980b146b9498e9324cf3dc8992b39609e6158401"},
+    {file = "http_parser-0.9.0-py3.7-macosx-10.15-x86_64.egg", hash = "sha256:779f6666c32e831f755bf8c410df8a0d5a498b374506bfe0e74d5b3def746de3"},
+]
+restkit = [
+    {file = "restkit-4.2.2.tar.gz", hash = "sha256:c0bda8eb7c643b5e818b612dab49121393abc8589c6cbe9b84085079d598599d"},
+]
+socketpool = [
+    {file = "socketpool-0.5.3.tar.gz", hash = "sha256:a06733434a56c4b60b8fcaa168102d2386253d36425804d55532a6bbbda6e2ec"},
+]
