@@ -1,12 +1,12 @@
 import json
 import requests
+import csv
 
 
 def count_user_commits(user):
     r = requests.get('https://api.github.com/users/%s/repos' % user)
     repos = json.loads(r.content)
     #print(repos)
-
     for repo in repos:
         if repo['fork'] is True:
             # skip it
@@ -20,7 +20,8 @@ def count_user_commits(user):
 def count_repo_commits(commits_url, _acc=0):
     r = requests.get(commits_url)
     #print (json.loads(r.content))
-   # parsejson(r.content)
+    parsejson(r.content)
+
     commits = json.loads(r.content)
     
     n = len(commits)
@@ -36,9 +37,12 @@ def count_repo_commits(commits_url, _acc=0):
     return count_repo_commits(next_url, _acc + n)
 #writing method to parse json 
 def parsejson(jsoncontent):
-  json_object =json.loads (jsoncontent)
-  print (json_object[0]['commit'])
   
+  json_object =json.loads (jsoncontent)
+  
+  for key in json_object:
+    #print ("inside for parsejson")
+    print (key['commit']['author']['date'])
 
 # given a link header from github, find the link for the next url which they use for pagination
 def find_next(link):
