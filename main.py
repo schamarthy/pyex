@@ -20,7 +20,7 @@ def count_user_commits(user):
 def count_repo_commits(commits_url, _acc=0):
     r = requests.get(commits_url)
     #print (json.loads(r.content))
-    parsejson(r.content)
+   # parsejson(r.content)
     commits = json.loads(r.content)
     
     n = len(commits)
