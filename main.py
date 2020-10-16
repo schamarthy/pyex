@@ -1,30 +1,23 @@
-#import sys
-#print ("Enter your username: ")
-#inputUserName=input()
-#print (inputUserName)
-
 import json
-from restkit import request
-
-USER = 'gdamjan'
+import requests
 
 
 def count_user_commits(user):
-    r = request('https://api.github.com/users/%s/repos' % user)
-    repos = json.loads(r.body_string())
+    r = requests.get('https://api.github.com/users/%s/repos' % user)
+    repos = json.loads(r.content)
 
     for repo in repos:
         if repo['fork'] is True:
             # skip it
             continue
         n = count_repo_commits(repo['url'] + '/commits')
-        yield (repo['name'], n)
-
+        repo['num_commits'] = n
+        yield repo
 
 
 def count_repo_commits(commits_url, _acc=0):
-    r = request(commits_url)
-    commits = json.loads(r.body_string())
+    r = requests.get(commits_url)
+    commits = json.loads(r.content)
     n = len(commits)
     if n == 0:
         return _acc
@@ -37,6 +30,7 @@ def count_repo_commits(commits_url, _acc=0):
     # try to be tail recursive, even when it doesn't matter in CPython
     return count_repo_commits(next_url, _acc + n)
 
+
 # given a link header from github, find the link for the next url which they use for pagination
 def find_next(link):
     for l in link.split(','):
@@ -46,8 +40,15 @@ def find_next(link):
 
 
 if __name__ == '__main__':
+    import sys
+    try:
+        #user = sys.argv[1]
+        user='schamarthy'
+    except IndexError:
+        print ("Usage: %s <username>" % sys.argv[0])
+        sys.exit(1)
     total = 0
-    for repo, n in count_user_commits(USER):
-        print ("Repo `%s` has %d commits." % (repo, n))
-        total += n
+    for repo in count_user_commits(user):
+        print ("Repo `%(name)s` has %(num_commits)d commits, size %(size)d." % repo)
+        total += repo['num_commits']
     print ("Total commits: %d" % total)
