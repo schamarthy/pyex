@@ -7,7 +7,8 @@ def count_user_commits(gh_session,user):
     #repos_url = 'https://api.github.com/user/repos'
     r = gh_session.get('https://api.github.com/users/%s/repos' % user)
     repos = json.loads(r.content)
-
+    file = open('commitDates.csv', 'w+', newline='\n')
+    
    # print(repos)
     for repo in repos:
         if repo['fork'] is True:
@@ -20,10 +21,17 @@ def count_user_commits(gh_session,user):
 
 
 def count_repo_commits(gh_session,commits_url, _acc=0):
-
     r = gh_session.get(commits_url)
     #print (json.loads(r.content))
-    parsejson(r.content)
+    print ("Dates for repo")
+    commitDate=parsejson(r.content)
+    print (commitDate, "\n")
+    file = open('commitDates.csv', 'a+', newline='\n') 
+  
+  # writing the data into the file 
+    with file:     
+        write = csv.writer(file) 
+        write.writerows(commitDate) 
 
     commits = json.loads(r.content)
     
@@ -38,15 +46,17 @@ def count_repo_commits(gh_session,commits_url, _acc=0):
         return _acc + n
     # try to be tail recursive, even when it doesn't matter in CPython
     return count_repo_commits(next_url, _acc + n)
-#writing method to parse json 
+#writing method to parse json and write to csv file
 def parsejson(jsoncontent):
+    json_object =json.loads (jsoncontent)
+    commitDate=[]
+    for key in json_object:
+      #print ("inside for parsejson")
+      
+      commitDate.append(key['commit']['author']['date'])
+
+    return commitDate
   
-  json_object =json.loads (jsoncontent)
-  
-  for key in json_object:
-    #print ("inside for parsejson")
-    commitDate = (key['commit']['author']['date'])
-    print (commitDate)
 
 # given a link header from github, find the link for the next url which they use for pagination
 def find_next(link):
@@ -59,7 +69,7 @@ def find_next(link):
 if __name__ == '__main__':
     import sys
     username='schamarthy'
-    authtoken='57ccc030c3a5c23ec7a25f3c92a449e5977d6a57'
+    authtoken='b628609a7e4717ce95f6ab2132e28b8fc96e797f'
     # create a re-usable session object with the user creds in-built
     gh_session = requests.Session()
     gh_session.auth = (username, authtoken)
